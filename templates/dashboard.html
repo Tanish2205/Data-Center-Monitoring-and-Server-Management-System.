@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Data Center Monitor{% endblock %}
+
+{% block content %}
+
+<!-- Top summary numbers -->
+<div class="row g-3 mb-4">
+    <div class="col-md-2">
+        <div class="card summary-card">
+            <div class="card-body">
+                <p class="text-muted mb-1 small">Total Servers</p>
+                <h4 id="totalServers" class="mb-0">-</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card summary-card">
+            <div class="card-body">
+                <p class="text-muted mb-1 small">Online Servers</p>
+                <h4 id="onlineServers" class="mb-0 text-success">-</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card summary-card">
+            <div class="card-body">
+                <p class="text-muted mb-1 small">Total Users</p>
+                <h4 id="totalUsers" class="mb-0 text-info">-</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card summary-card">
+            <div class="card-body">
+                <p class="text-muted mb-1 small">Active Users</p>
+                <h4 id="activeUsers" class="mb-0 text-success">-</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card summary-card">
+            <div class="card-body">
+                <p class="text-muted mb-1 small">Offline Users</p>
+                <h4 id="offlineUsers" class="mb-0 text-secondary">-</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card summary-card">
+            <div class="card-body">
+                <p class="text-muted mb-1 small">Active Alerts</p>
+                <h4 id="activeAlerts" class="mb-0 text-warning">-</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- This machine's live stats -->
+<div class="card mb-4">
+    <div class="card-header">This Computer - Live Stats</div>
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="d-flex justify-content-between">
+                    <span>CPU</span><span id="cpuText">0%</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-primary" id="cpuBar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex justify-content-between">
+                    <span>RAM</span><span id="ramText">0%</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-success" id="ramBar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex justify-content-between">
+                    <span>Disk</span><span id="diskText">0%</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-warning" id="diskBar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row text-muted small">
+            <div class="col-md-3">RAM used: <span id="ramDetail">-</span></div>
+            <div class="col-md-3">Disk used: <span id="diskDetail">-</span></div>
+            <div class="col-md-3">Temperature: <span id="tempDetail">-</span></div>
+            <div class="col-md-3">Network sent/recv: <span id="netDetail">-</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart -->
+<div class="card mb-4">
+    <div class="card-header">CPU &amp; RAM Over Time</div>
+    <div class="card-body position-relative">
+        <div id="noServerDataMsg" class="alert alert-secondary text-center my-4 d-none">
+            <strong>No server data available</strong>
+            <p class="mb-0 text-muted small">Add a server to start collecting historical metrics.</p>
+        </div>
+        <canvas id="historyChart" height="80"></canvas>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+    startDashboard();
+</script>
+{% endblock %}

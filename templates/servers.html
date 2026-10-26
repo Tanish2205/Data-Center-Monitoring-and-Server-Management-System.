@@ -1,0 +1,351 @@
+{% extends "base.html" %}
+{% block title %}Servers - Data Center Monitor{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1 text-dark fw-bold">Server Management</h4>
+        <p class="text-muted small mb-0">Monitor and manage data center server infrastructure</p>
+    </div>
+    <!-- Add Server Button (Coming Soon Placeholder) -->
+    <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1 shadow-sm" data-bs-toggle="modal" data-bs-target="#addServerComingSoonModal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/>
+        </svg>
+        Add Server
+    </button>
+</div>
+
+<!-- Server List (Modern Cards Layout) -->
+<div class="row g-4 mb-4">
+    {% if servers %}
+        {% for server in servers %}
+        <div class="col-md-6 col-lg-6">
+            <div class="card card-hover h-100 p-3 bg-white">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        {% if 'Ubuntu' in (server.os_name or '') or 'UBU' in server.name %}
+                            <!-- Ubuntu OS Icon -->
+                            <div class="os-icon-box os-icon-ubuntu">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 3.273c.896 0 1.625.729 1.625 1.625S12.896 6.523 12 6.523 10.375 5.794 10.375 4.898c0-.896.729-1.625 1.625-1.625zm6.545 4.364c.896 0 1.625.729 1.625 1.625s-.729 1.625-1.625 1.625c-.896 0-1.625-.729-1.625-1.625s.729-1.625 1.625-1.625zM5.455 9.264c.896 0 1.625.729 1.625 1.625s-.729 1.625-1.625 1.625c-.896 0-1.625-.729-1.625-1.625s.729-1.625 1.625-1.625zM12 17.477c-.896 0-1.625.729-1.625 1.625S11.104 20.727 12 20.727s1.625-.729 1.625-1.625-.729-1.625-1.625-1.625z"/>
+                                </svg>
+                            </div>
+                        {% else %}
+                            <!-- Windows OS Icon -->
+                            <div class="os-icon-box os-icon-win">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-windows" viewBox="0 0 16 16">
+                                    <path d="M6.555 1.375 0 2.237v5.45h6.555V1.375zM0 8.316v5.45l6.555.862V8.316H0zM7.445 1.25l8.555-1.25v7.688H7.445V1.25zM16 8.316v7.688l-8.555-1.25V8.316H16z"/>
+                                </svg>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="mb-0 text-dark fw-bold">{{ server.name }}</h5>
+                            <span class="badge bg-light text-dark border font-monospace">{{ server.server_code or 'SRV-001' }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Clean Professional Status Badge (No glowing/blinking dots) -->
+                    {% if server.status == 'online' %}
+                        <span class="badge-status-online">Online</span>
+                    {% elif server.status == 'warning' %}
+                        <span class="badge-status-warning">Warning</span>
+                    {% elif server.status == 'critical' %}
+                        <span class="badge-status-critical">Critical</span>
+                    {% else %}
+                        <span class="badge-status-offline">Offline</span>
+                    {% endif %}
+                </div>
+
+                <div class="border-top border-light-subtle my-2"></div>
+
+                <div class="row g-3 text-muted small my-1">
+                    <div class="col-6">
+                        <span class="d-block text-secondary">IP Address:</span>
+                        <code class="text-primary font-monospace fs-6">{{ server.ip_address }}</code>
+                    </div>
+                    <div class="col-6">
+                        <span class="d-block text-secondary">Operating System:</span>
+                        <strong class="text-dark">{{ server.os_name or 'Windows Server 2022' }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="d-block text-secondary">Server Type:</span>
+                        <span class="text-dark fw-semibold">{{ server.server_type or 'Application Server' }}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="d-block text-secondary">Last Updated:</span>
+                        <span class="text-success small fw-medium">Just now</span>
+                    </div>
+                </div>
+
+                <div class="mt-3 pt-3 d-flex justify-content-between align-items-center border-top">
+                    <small class="text-muted">Port: <code class="text-dark">{{ server.port or (22 if 'Ubuntu' in (server.os_name or '') else 3389) }}</code></small>
+                    
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1 shadow-sm" onclick="viewServerDetails({{ server.id }})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                              <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                              <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                            </svg>
+                            View
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">No servers available.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Add Server Coming Soon Modal Placeholder -->
+<div class="modal fade" id="addServerComingSoonModal" tabindex="-1" aria-labelledby="addServerComingSoonModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2" id="addServerComingSoonModalLabel">
+                    <span class="badge bg-primary">Notice</span> Add Server Feature
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4 text-center">
+                <div class="mb-3 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                </div>
+                <h6 class="fw-bold text-dark mb-2">Feature Coming Soon</h6>
+                <p class="text-muted small mb-0 px-3">
+                    This feature will be available in a future update. Currently, the dashboard includes pre-configured servers for demonstration.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modern Professional Server View Details Modal -->
+<div class="modal fade" id="serverDetailModal" tabindex="-1" aria-labelledby="serverDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-dark text-white">
+                <div class="d-flex align-items-center gap-2">
+                    <span id="modalOsIcon"></span>
+                    <div>
+                        <h5 class="modal-title mb-0 text-white fw-bold" id="modalServerName">DC-WIN-01</h5>
+                        <small class="text-light opacity-75 font-monospace" id="modalServerCode">SRV-001</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4 bg-light-subtle">
+                <!-- General Information -->
+                <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">General Information</h6>
+                <div class="row g-3 mb-4 bg-white p-3 rounded-3 border">
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted d-block">Server Name</small>
+                        <strong class="text-dark" id="genServerName">DC-WIN-01</strong>
+                    </div>
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted d-block">Server ID</small>
+                        <strong class="text-primary font-monospace" id="genServerID">SRV-001</strong>
+                    </div>
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted d-block">IP Address</small>
+                        <code class="fs-6" id="genIP">192.168.1.10</code>
+                    </div>
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted d-block">Operating System</small>
+                        <strong class="text-dark" id="genOS">Windows Server 2022</strong>
+                    </div>
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted d-block">Server Type</small>
+                        <span class="text-dark fw-semibold" id="genType">Application Server</span>
+                    </div>
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted d-block">Status</small>
+                        <span id="genStatus" class="badge-status-online">Online</span>
+                    </div>
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted d-block">Location</small>
+                        <span class="text-dark" id="genLocation">Data Center Rack A1</span>
+                    </div>
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted d-block">Port</small>
+                        <code id="genPort">3389</code>
+                    </div>
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted d-block">Last Updated</small>
+                        <span class="text-success small fw-medium" id="genLastUpdated">Just now</span>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics (Demo Values) -->
+                <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">Performance (Demo Data)</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded bg-white">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">CPU Usage</small>
+                                <span class="fw-bold text-primary" id="perfCpu">28%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-primary" id="perfCpuBar" style="width: 28%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded bg-white">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">RAM Usage</small>
+                                <span class="fw-bold text-success" id="perfRam">46%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" id="perfRamBar" style="width: 46%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded bg-white">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Disk Usage</small>
+                                <span class="fw-bold text-warning" id="perfDisk">62%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" id="perfDiskBar" style="width: 62%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded bg-white">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Network Usage</small>
+                                <span class="fw-bold text-info" id="perfNet">120 Mbps</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" id="perfNetBar" style="width: 50%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-2 px-3 border rounded bg-white d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Uptime</small>
+                            <strong class="text-dark" id="perfUptime">15 Days 08 Hours</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-2 px-3 border rounded bg-white d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Temperature</small>
+                            <strong class="text-warning" id="perfTemp">42°C</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assigned Users & Recent Activity -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <h6 class="text-primary fw-bold mb-2">Assigned Users</h6>
+                        <ul class="list-group shadow-sm" id="modalUserList">
+                            <li class="list-group-item d-flex align-items-center gap-2">Administrator</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary fw-bold mb-2">Recent Activity</h6>
+                        <ul class="list-group shadow-sm" id="modalActivityList">
+                            <li class="list-group-item small text-muted">✓ Health Check Completed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    async function viewServerDetails(id) {
+        const modal = new bootstrap.Modal(document.getElementById('serverDetailModal'));
+        modal.show();
+
+        try {
+            const res = await fetch(`/servers/${id}/details`);
+            const data = await res.json();
+
+            document.getElementById('modalServerName').textContent = data.name;
+            document.getElementById('modalServerCode').textContent = data.server_code;
+
+            const isUbuntu = data.os_name.includes('Ubuntu') || data.name.includes('UBU');
+            document.getElementById('modalOsIcon').innerHTML = isUbuntu
+                ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ea580c" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 3.273c.896 0 1.625.729 1.625 1.625S12.896 6.523 12 6.523 10.375 5.794 10.375 4.898c0-.896.729-1.625 1.625-1.625zm6.545 4.364c.896 0 1.625.729 1.625 1.625s-.729 1.625-1.625 1.625c-.896 0-1.625-.729-1.625-1.625s.729-1.625 1.625-1.625zM5.455 9.264c.896 0 1.625.729 1.625 1.625s-.729 1.625-1.625 1.625c-.896 0-1.625-.729-1.625-1.625s.729-1.625 1.625-1.625zM12 17.477c-.896 0-1.625.729-1.625 1.625S11.104 20.727 12 20.727s1.625-.729 1.625-1.625-.729-1.625-1.625-1.625z"/></svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#0078d4" class="bi bi-windows" viewBox="0 0 16 16"><path d="M6.555 1.375 0 2.237v5.45h6.555V1.375zM0 8.316v5.45l6.555.862V8.316H0zM7.445 1.25l8.555-1.25v7.688H7.445V1.25zM16 8.316v7.688l-8.555-1.25V8.316H16z"/></svg>`;
+
+            document.getElementById('genServerName').textContent = data.name;
+            document.getElementById('genServerID').textContent = data.server_code;
+            document.getElementById('genIP').textContent = data.ip_address;
+            document.getElementById('genOS').textContent = data.os_name;
+            document.getElementById('genType').textContent = data.server_type;
+            document.getElementById('genLocation').textContent = data.location;
+            document.getElementById('genPort').textContent = data.port;
+            document.getElementById('genLastUpdated').textContent = data.last_updated;
+
+            const p = data.performance || {};
+            document.getElementById('perfCpu').textContent = (p.cpu_percent || 28) + '%';
+            document.getElementById('perfCpuBar').style.width = (p.cpu_percent || 28) + '%';
+
+            document.getElementById('perfRam').textContent = (p.ram_percent || 46) + '%';
+            document.getElementById('perfRamBar').style.width = (p.ram_percent || 46) + '%';
+
+            document.getElementById('perfDisk').textContent = (p.disk_percent || 62) + '%';
+            document.getElementById('perfDiskBar').style.width = (p.disk_percent || 62) + '%';
+
+            document.getElementById('perfNet').textContent = p.net_usage || '120 Mbps';
+            document.getElementById('perfUptime').textContent = p.uptime || '15 Days 08 Hours';
+            document.getElementById('perfTemp').textContent = p.temperature || '42°C';
+
+            // Render Assigned Users
+            const userList = document.getElementById('modalUserList');
+            userList.innerHTML = '';
+            if (data.assigned_users && data.assigned_users.length > 0) {
+                data.assigned_users.forEach(u => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex align-items-center gap-2 fw-medium';
+                    li.innerHTML = `👤 ${u.name}`;
+                    userList.appendChild(li);
+                });
+            } else {
+                userList.innerHTML = '<li class="list-group-item small text-muted">No users assigned.</li>';
+            }
+
+            // Render Recent Activity
+            const activityList = document.getElementById('modalActivityList');
+            activityList.innerHTML = '';
+            const activities = data.recent_activity || [
+                "Health Check Completed", "Performance Updated", "Backup Completed Successfully", "No Critical Alerts"
+            ];
+            activities.forEach(act => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item small text-muted';
+                li.textContent = '✓ ' + act;
+                activityList.appendChild(li);
+            });
+
+        } catch (e) {
+            console.error('Failed to load server details', e);
+        }
+    }
+</script>
+{% endblock %}

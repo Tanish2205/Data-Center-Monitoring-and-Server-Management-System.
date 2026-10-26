@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% block title %}User Management - Data Center Monitor{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1 text-dark fw-bold">User Management</h4>
+        <p class="text-secondary small mb-0">Manage enterprise user accounts, server allocations, and access levels</p>
+    </div>
+    <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1 shadow-sm px-3" data-bs-toggle="modal" data-bs-target="#addUserModal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+          <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+          <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        Create User
+    </button>
+</div>
+
+<!-- Modern Enterprise Card Table -->
+<div class="enterprise-card">
+    <div class="table-responsive">
+        {% if users %}
+        <table class="table enterprise-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>User Details</th>
+                    <th>Status</th>
+                    <th>Assigned Server</th>
+                    <th>Created At</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <!-- User Details (Bold Name, Small Grey Email, NO status dots) -->
+                    <td>
+                        <div class="user-name">{{ user.name }}</div>
+                        <div class="user-email">{{ user.email or 'No email recorded' }}</div>
+                    </td>
+
+                    <!-- Status Badge (No coloured dots) -->
+                    <td>
+                        {% if user.status == 'Active' %}
+                            <span class="badge-status-active">Active</span>
+                        {% elif user.status == 'Busy' %}
+                            <span class="badge-status-busy">Busy</span>
+                        {% else %}
+                            <span class="badge-status-offline">Offline</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Assigned Server Badge (#334155 Dark Slate, 8px radius, white text, 600 weight, server icon) -->
+                    <td>
+                        {% if user.server_name %}
+                            <span class="server-badge">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-hdd-network" viewBox="0 0 16 16">
+                                    <path d="M4.5 5.001a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM2 4.5a1.5 1.5 0 0 1 1.5-1.5h9A1.5 1.5 0 0 1 14 4.5v1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 5.5v-1zM3.5 4a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-9z"/>
+                                    <path d="M5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v1a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 5 7.5v-1zM6.5 6a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-3zM2 10.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 11.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-9z"/>
+                                </svg>
+                                {{ user.server_name }}
+                            </span>
+                        {% else %}
+                            <span class="server-badge-unassigned">Unassigned</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Created At -->
+                    <td class="text-secondary small">
+                        {{ user.created_at.split(' ')[0] if user.created_at else 'N/A' }}
+                    </td>
+
+                    <!-- Actions Column (👁 View, ✏ Edit, 🗑 Delete) -->
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-1">
+                            <!-- View User Details Trigger -->
+                            <button class="btn btn-sm btn-action-view" data-bs-toggle="modal" data-bs-target="#viewUserModal-{{ user.id }}">
+                                👁 View
+                            </button>
+
+                            <!-- Edit / Reassign User Trigger -->
+                            <button class="btn btn-sm btn-action-edit" data-bs-toggle="modal" data-bs-target="#assignUserModal-{{ user.id }}">
+                                ✏ Edit
+                            </button>
+
+                            <!-- Delete User Form -->
+                            <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}" class="d-inline"
+                                  onsubmit="return confirm('Are you sure you want to delete user {{ user.name }}?');">
+                                <button type="submit" class="btn btn-sm btn-action-delete">
+                                    🗑 Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- View User Details Modal -->
+                <div class="modal fade" id="viewUserModal-{{ user.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header bg-dark text-white">
+                                <h5 class="modal-title fs-6 fw-bold">User Information</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <small class="text-secondary d-block">Full Name</small>
+                                        <strong class="text-dark">{{ user.name }}</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-secondary d-block">Email Address</small>
+                                        <span class="text-dark">{{ user.email or 'N/A' }}</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-secondary d-block">Account Status</small>
+                                        {% if user.status == 'Active' %}
+                                            <span class="badge-status-active">Active</span>
+                                        {% elif user.status == 'Busy' %}
+                                            <span class="badge-status-busy">Busy</span>
+                                        {% else %}
+                                            <span class="badge-status-offline">Offline</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-secondary d-block">Assigned Server</small>
+                                        {% if user.server_name %}
+                                            <span class="server-badge mt-1">{{ user.server_name }}</span>
+                                        {% else %}
+                                            <span class="text-muted small">Unassigned</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-12">
+                                        <small class="text-secondary d-block">Date Created</small>
+                                        <span class="text-dark small">{{ user.created_at }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit User Modal -->
+                <div class="modal fade" id="assignUserModal-{{ user.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <form method="POST" action="{{ url_for('assign_user', user_id=user.id) }}">
+                                <div class="modal-header">
+                                    <h5 class="modal-title fs-6 fw-bold">Edit User Details - {{ user.name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-dark">User Status</label>
+                                        <select name="status" class="form-select">
+                                            <option value="Active" {% if user.status == 'Active' %}selected{% endif %}>Active</option>
+                                            <option value="Offline" {% if user.status == 'Offline' %}selected{% endif %}>Offline</option>
+                                            <option value="Busy" {% if user.status == 'Busy' %}selected{% endif %}>Busy</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-dark">Assign Server</label>
+                                        <select name="server_id" class="form-select">
+                                            <option value="">-- Unassigned (None) --</option>
+                                            {% for srv in servers %}
+                                            <option value="{{ srv.id }}" {% if user.server_id == srv.id %}selected{% endif %}>
+                                                {{ srv.name }} ({{ srv.ip_address }})
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                        <small class="form-text text-muted">A user can only be assigned to one server at a time.</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary btn-sm px-3">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted text-center py-5 mb-0">No users created yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Create User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_user') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-6 fw-bold" id="addUserModalLabel">Create New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-medium text-dark">Full Name <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-medium text-dark">Email Address</label>
+                        <input type="email" name="email" class="form-control" placeholder="e.g. rahul@datacenter.local">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-medium text-dark">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="Active" selected>Active</option>
+                            <option value="Offline">Offline</option>
+                            <option value="Busy">Busy</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-medium text-dark">Assign to Server (Optional)</label>
+                        <select name="server_id" class="form-select">
+                            <option value="">-- Unassigned --</option>
+                            {% for srv in servers %}
+                            <option value="{{ srv.id }}">{{ srv.name }} ({{ srv.ip_address }})</option>
+                            {% endfor %}
+                        </select>
+                        <small class="form-text text-muted">A user can only be assigned to one server at a time.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-3">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

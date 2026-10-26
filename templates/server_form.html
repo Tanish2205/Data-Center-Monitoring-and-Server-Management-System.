@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Server' if server else 'Add Server' }} - Data Center Monitor{% endblock %}
+
+{% block content %}
+
+<h4 class="mb-3">{{ 'Edit Server' if server else 'Add Server' }}</h4>
+
+<div class="card" style="max-width: 500px;">
+    <div class="card-body">
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Server Name</label>
+                <input type="text" name="name" class="form-control" required
+                       value="{{ server.name if server else '' }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">IP Address</label>
+                <input type="text" name="ip_address" class="form-control" required
+                       placeholder="e.g. 192.168.1.10"
+                       value="{{ server.ip_address if server else '' }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Notes (optional)</label>
+                <textarea name="notes" class="form-control" rows="3">{{ server.notes if server else '' }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{{ url_for('servers') }}" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

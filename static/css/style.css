@@ -1,0 +1,479 @@
+/* Modern Enterprise Data Center Dashboard Design System (AWS / Grafana Style) */
+
+:root {
+    --primary: #1E293B;
+    --secondary: #475569;
+    --accent: #2563EB;
+    --success: #16A34A;
+    --warning: #EA580C;
+    --danger: #DC2626;
+    --bg-main: #F8FAFC;
+    --border-color: #E2E8F0;
+    --slate-dark: #334155;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--primary) !important;
+    border-bottom: 1px solid var(--slate-dark);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* Enterprise Card Container */
+.card, .enterprise-card {
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+}
+
+.summary-card h3 {
+    margin: 0;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+}
+
+/* User Management Table Styles */
+.enterprise-table {
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.enterprise-table thead th {
+    background-color: #f1f5f9;
+    color: var(--secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.enterprise-table tbody td {
+    padding: 16px 20px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.enterprise-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.enterprise-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.enterprise-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* User Text Styles */
+.user-name {
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.95rem;
+}
+
+.user-email {
+    font-size: 0.8rem;
+    color: var(--secondary);
+}
+
+/* Assigned Server Badge */
+.server-badge {
+    background-color: var(--slate-dark);
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.server-badge-unassigned {
+    background-color: #f1f5f9;
+    color: var(--secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Clean Status Badges (NO coloured dots) */
+.badge-status-active {
+    background-color: var(--success);
+    color: #ffffff;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.badge-status-offline {
+    background-color: #6B7280;
+    color: #ffffff;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.badge-status-busy {
+    background-color: var(--warning);
+    color: #ffffff;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* Action Buttons */
+.btn-action-view {
+    background-color: #eff6ff;
+    color: var(--accent);
+    border: 1px solid #bfdbfe;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 5px 10px;
+    transition: all 0.15s ease;
+}
+
+.btn-action-view:hover {
+    background-color: var(--accent);
+    color: #ffffff;
+}
+
+.btn-action-edit {
+    background-color: #f8fafc;
+    color: var(--secondary);
+    border: 1px solid var(--border-color);
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 5px 10px;
+    transition: all 0.15s ease;
+}
+
+.btn-action-edit:hover {
+    background-color: var(--primary);
+    color: #ffffff;
+}
+
+.btn-action-delete {
+    background-color: #fef2f2;
+    color: var(--danger);
+    border: 1px solid #fecaca;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 5px 10px;
+    transition: all 0.15s ease;
+}
+
+.btn-action-delete:hover {
+    background-color: var(--danger);
+    color: #ffffff;
+}
+
+/* Modern Clean White Theme Login Page Styling */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.04) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.04) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, #ffffff 0%, #f1f5f9 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 1.5rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.login-background-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.login-card-wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.login-card {
+    background: #ffffff;
+    padding: 2.75rem 2.5rem;
+    border-radius: 20px;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.02),
+        0 20px 25px -5px rgba(15, 23, 42, 0.05),
+        0 0 0 1px rgba(226, 232, 240, 0.8);
+    width: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-card:hover {
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.03),
+        0 25px 30px -5px rgba(15, 23, 42, 0.07),
+        0 0 0 1px rgba(203, 213, 225, 0.9);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.brand-badge {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #2563eb;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem auto;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+    border: 1px solid #bfdbfe;
+}
+
+.brand-icon {
+    stroke: #2563eb;
+}
+
+.login-title {
+    color: #0f172a;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.35rem;
+}
+
+.login-subtitle {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-bottom: 0;
+    font-weight: 400;
+}
+
+/* Custom Alert */
+.alert-custom {
+    border-radius: 12px;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #fecaca;
+    background-color: #fef2f2;
+    color: #991b1b;
+}
+
+/* Form Styling */
+.login-card .form-label {
+    color: #334155;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+.input-group-custom {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.form-control-custom {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.6rem;
+    font-size: 0.925rem;
+    font-weight: 400;
+    color: #0f172a;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.form-control-custom:focus {
+    background-color: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.form-control-custom:focus + .input-icon,
+.input-group-custom:focus-within .input-icon {
+    color: #2563eb;
+}
+
+.btn-toggle-password {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: color 0.2s ease;
+}
+
+.btn-toggle-password:hover {
+    color: #334155;
+}
+
+/* Submit Button */
+.btn-login {
+    width: 100%;
+    padding: 0.8rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+    transition: all 0.2s ease;
+}
+
+.btn-login:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+    transform: translateY(-1px);
+}
+
+.btn-login:active {
+    transform: translateY(0);
+}
+
+/* Demo Credentials Box */
+.credentials-hint {
+    background-color: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    text-align: center;
+}
+
+.hint-title {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+}
+
+.hint-badge {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.825rem;
+    color: #334155;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.15s ease;
+}
+
+.hint-badge:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.hint-badge code {
+    color: #0f172a;
+    font-weight: 600;
+    font-family: monospace;
+}
+
+.fill-action {
+    font-size: 0.75rem;
+    color: #2563eb;
+    font-weight: 500;
+    margin-left: 0.25rem;
+}
+
+/* Footer Status */
+.login-footer-status {
+    font-size: 0.8rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 0.7;
+    }
+}
+
